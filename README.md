@@ -1,148 +1,243 @@
-# Mindsphere Mobile App
+# MindSphere Mobile
 
-A WebView wrapper for the Mindsphere web application, built with Expo.
+> React Native mobile app for MindSphere mental wellness platform
 
-## Purpose
-
-This mobile app wraps your existing Mindsphere website in a native WebView, providing:
-- Native app experience for your web app
-- Android APK for sideloading and testing
-- Android AAB for Play Store distribution
-- Proper navigation and error handling
-
-## Prerequisites
-
-- Node.js LTS (≥ 18.x)
-- npm or yarn
-- Expo CLI (via npx)
-- Android device or emulator for testing
-
-## Environment Setup
-
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Update `.env` with your website URL:
-   ```
-   EXPO_PUBLIC_APP_URL=https://your-website.com/
-   EXPO_PUBLIC_ENV=production
-   ```
-
-**Important**: The URL must be HTTPS and accessible from mobile devices.
-
-## Development
-
-### Run Locally
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npx expo start
-
-# Scan QR code with Expo Go app on Android
-# Or press 'a' for Android emulator
-```
-
-### Testing
-
-See [docs/webview-test.md](./docs/webview-test.md) for comprehensive testing checklist.
-
-## Building for Production
+## 🚀 Quick Start
 
 ### Prerequisites
+- Node.js 18+
+- Expo CLI
+- iOS Simulator or Android Emulator
+- Physical device for testing
 
-1. **Login to EAS**:
-   ```bash
-   npx eas login
-   ```
-
-2. **Configure EAS**:
-   ```bash
-   npx eas build:configure
-   ```
-
-### Build Commands
-
-#### Android APK (Preview/Testing)
+### Installation
 ```bash
-npx eas build -p android --profile preview
+npm install
 ```
-- Creates debuggable APK for internal testing
-- Download and install on Android devices
-- Good for testing and sharing with team
 
-#### Android AAB (Production/Play Store)
+### Development
 ```bash
-npx eas build -p android --profile production
+npm start          # Start Expo development server
+npm run ios        # Run on iOS simulator
+npm run android    # Run on Android emulator
+npm run web        # Run as web app
 ```
-- Creates release AAB for Play Store
-- Optimized and signed for production
-- Upload to Google Play Console
 
-### Credentials Management
+## 📁 Project Structure
 
-**Android Keystore**: 
-- First build: Choose "Let EAS handle credentials" 
-- EAS will auto-generate and store keystore securely
-- Manage later with: `npx eas credentials`
+```
+src/
+├── components/     # Reusable components
+├── lib/           # Utility libraries
+├── App.tsx        # Main app component
+└── index.ts       # Entry point
+```
 
-**Access Token (for CI)**:
-- Get from: [expo.dev → Account → Settings → Access Tokens](https://expo.dev/accounts/settings/access-tokens)
-- Store as `EXPO_TOKEN` in your CI environment
-- Use for automated builds
+## 📱 Features
 
-## App Configuration
+### WebView Integration
+- Embedded web app
+- Native device features
+- Seamless user experience
+- Offline capabilities
 
-- **Name**: Mindsphere
-- **Package**: com.mindsphere.app
-- **Scheme**: mindsphere://
-- **Permissions**: Internet, Camera, Storage (for file uploads)
+### Native Features
+- Push notifications
+- Device sensors
+- Camera access
+- File system access
 
-## Features
+### Cross-Platform
+- iOS and Android support
+- Consistent UI/UX
+- Platform-specific optimizations
+- Single codebase
 
-- ✅ WebView wrapper for existing website
-- ✅ Native navigation (back button handling)
-- ✅ Pull-to-refresh
-- ✅ External link handling
-- ✅ File upload support
-- ✅ JavaScript error forwarding
-- ✅ Offline error handling
-- ✅ Structured logging
-- ✅ Android APK/AAB builds
+## 🔧 Configuration
 
-## Limitations
+### App Configuration
+- **App Name**: MindSphere
+- **Bundle ID**: com.mindsphere.app
+- **Version**: 1.0.0
+- **Platform**: iOS, Android, Web
 
-- WebView wrapper (not native mobile app)
-- Push notifications require additional setup
-- Deep offline functionality needs extra work
-- Background tasks need separate configuration
-- Performance depends on website optimization
+### Environment Variables
+```env
+# Backend API
+EXPO_PUBLIC_API_URL=https://your-backend-url.com
 
-## Troubleshooting
+# Supabase
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 
-### Configuration Errors
-- Ensure `.env` has valid HTTPS URL
-- Check `EXPO_PUBLIC_APP_URL` is set correctly
-- Verify website is accessible from mobile
+# LiveKit
+EXPO_PUBLIC_LIVEKIT_URL=your_livekit_url
+```
 
-### Build Issues
-- Run `npx eas login` first
-- Check EAS build logs for specific errors
-- Ensure Android keystore is configured
+## 🎨 UI Components
 
-### WebView Issues
-- Test website in mobile browser first
-- Check network connectivity
-- Review error logs for specific issues
+### WebView Shell
+- `WebViewShell` - Main web view component
+- Custom navigation
+- Loading states
+- Error handling
 
-## Next Steps
+### Native Components
+- Status bar management
+- Safe area handling
+- Platform-specific styling
+- Accessibility features
 
-- Reply "NEXT" for optional iOS setup
-- Reply "NEXT" for Play Store asset checklist
-- Customize app icon and splash screen
-- Add push notifications (if needed)
-- Implement deep linking
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Test on device
+npm run test:device
+
+# E2E testing
+npm run test:e2e
+```
+
+## 🚀 Deployment
+
+### Expo Application Services (EAS)
+```bash
+# Install EAS CLI
+npm install -g @expo/eas-cli
+
+# Build for production
+eas build --platform all
+
+# Submit to app stores
+eas submit --platform all
+```
+
+### Development Builds
+```bash
+# Create development build
+eas build --profile development
+
+# Install on device
+eas build:run
+```
+
+## 📱 Platform Support
+
+### iOS
+- **Minimum Version**: iOS 13.0
+- **Target Version**: iOS 17.0
+- **Devices**: iPhone, iPad
+- **Features**: Face ID, Touch ID, Siri
+
+### Android
+- **Minimum Version**: Android 8.0 (API 26)
+- **Target Version**: Android 14 (API 34)
+- **Devices**: Phone, Tablet
+- **Features**: Fingerprint, Biometric, Google Assistant
+
+### Web
+- **Browsers**: Chrome, Safari, Firefox, Edge
+- **Features**: PWA support, Offline mode
+- **Responsive**: Mobile and desktop
+
+## 🔧 Development
+
+### Adding Native Features
+1. Install required packages
+2. Configure permissions
+3. Implement platform-specific code
+4. Test on both platforms
+
+### WebView Integration
+1. Configure web view settings
+2. Handle navigation events
+3. Implement communication bridge
+4. Test web app integration
+
+### Styling
+- Use Expo's styling system
+- Platform-specific styles
+- Responsive design
+- Dark mode support
+
+### Error Handling
+- No fallback data - fail fast with clear errors
+- Comprehensive error logging with correlation IDs
+- Service-specific error tracking
+- Environment-aware logging levels
+
+### Git Workflow
+```bash
+# Make changes
+git add .
+git commit -m "feat: add offline mode support"
+git push origin feature/offline-mode
+```
+
+## 📊 Performance
+
+### Optimization
+- Lazy loading
+- Image optimization
+- Bundle size optimization
+- Memory management
+
+### Monitoring
+- Performance metrics
+- Crash reporting
+- User analytics
+- Error tracking
+
+## 🐛 Troubleshooting
+
+### Common Issues
+1. **Build Errors**: Check Expo CLI version
+2. **Device Issues**: Verify device compatibility
+3. **WebView Issues**: Check web app connectivity
+4. **Performance**: Monitor memory usage
+
+### Debug Mode
+```bash
+# Enable debug logging
+EXPO_DEBUG=true npm start
+```
+
+## 📚 Dependencies
+
+### Core
+- `expo` - Expo SDK
+- `react-native` - React Native framework
+- `react-native-web` - Web support
+
+### WebView
+- `react-native-webview` - WebView component
+- `@react-native-async-storage/async-storage` - Storage
+
+### Navigation
+- `@react-navigation/native` - Navigation
+- `@react-navigation/stack` - Stack navigator
+
+### Utilities
+- `expo-constants` - App constants
+- `expo-status-bar` - Status bar management
+
+## 🔒 Security
+
+### App Security
+- Code obfuscation
+- API key protection
+- Secure storage
+- Certificate pinning
+
+### Privacy
+- Data encryption
+- User consent
+- GDPR compliance
+- Data minimization
+
+## 📄 License
+
+MIT License - see [LICENSE](../../LICENSE) for details.
