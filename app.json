@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Mindsphere",
+    "slug": "mindsphere",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mindsphere.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app needs microphone access for voice meditation sessions and AI conversations."
+      }
+    },
+    "android": {
+      "package": "com.mindsphere.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "mindsphere",
+    "extra": {
+      "eas": {
+        "projectId": "ecb92c1d-5d15-4958-93e1-daec8d1c4e94"
+      }
+    }
+  }
+}

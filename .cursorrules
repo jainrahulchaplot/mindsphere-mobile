@@ -1,0 +1,243 @@
+# Global Coding Instructions for Mindsphere
+0) Purpose & Scope
+
+These instructions define how we plan, design, implement, test, and ship code with cleanliness, performance, observability, and safety. They also define Demo vs Production behavior and how we use the MCP tools you already have to ground decisions.
+
+1) Non-Negotiables (must follow)
+
+Plan first, then code. Never start coding before a written plan (template in §3).
+
+Enhancement before new. Prefer improving existing code unless the Decision Matrix (§4) justifies a new module.
+
+No secrets in code. All credentials/URLs/tokens via environment variables; validate at runtime and redact in logs.
+
+Structured logging only. Do not commit console.*. Use a structured logger pattern and include request/user context where available.
+
+Performance budget minded. Don’t add caches/indexes/bulk deps without quick measurements proving benefit.
+
+PR quality gates. Every PR carries a plan excerpt, tests or a test plan, a brief perf note for hot paths, and a rollback/flag strategy.
+
+MCP-assisted evidence. Use installed MCP tools to gather facts; include short summaries in your plan/PR (§2, §3).
+
+2) MCP Tooling — what we use & when (installed set only)
+
+Context7 → Gather official docs/links for APIs/SDKs you touch. Add 2–3 links you used in the plan. Never paste sample keys.
+
+Supabase MCP Server → For any DB change: inspect schema impact, run EXPLAIN/plan checks for your main queries, and summarize results.
+
+chrome-devtools → For UI changes: headless navigation to the changed path; capture console errors and a basic timing snapshot.
+
+Cloudflare Playwright → Add/update smoke tests for critical flows (auth, core flows, voice/join path if applicable); attach pass/fail summary.
+
+Tip: If any MCP shows a red dot in Cursor, open its logs to fix missing env/config before proceeding.
+
+3) Plan-First Template (paste in PR/issue before coding)
+
+Do not write code until this section is filled.
+
+1) Problem & intent
+One paragraph in plain language.
+
+2) Assumptions & constraints
+Bullets (e.g., latency targets, compliance limits, browser/device limits).
+
+3) Impact analysis
+
+User flows: which journeys change?
+
+Endpoints/contracts: which API boundaries might change?
+
+Components: which UI/logic parts are touched?
+
+Database tables/indexes: which read/write paths and indexes?
+
+Env keys: any new or changed environment variables?
+
+Security & privacy: data exposure, permissions, PII handling.
+
+Performance: expected latency/memory/bundle impact.
+
+4) Evidence via MCP (installed tools only)
+
+Context7: links used (2–3) → …
+
+Supabase MCP: schema notes & EXPLAIN snippets (short) → …
+
+chrome-devtools: headless check results (errors? basic timings?) → …
+
+Cloudflare Playwright: smoke run summary (route/flow + pass/fail) → …
+
+5) Options (≥2) with pros/cons
+Keep it brief. Note trade-offs.
+
+6) Chosen approach & why
+Reference the Decision Matrix (§4).
+
+7) Acceptance criteria
+Functional + non-functional (perf, reliability, security).
+
+8) Test plan
+Unit, integration/e2e, and any perf checks to run.
+
+9) Rollback plan
+Feature flag or simple revert path. State data migration rollback if any.
+
+4) Enhance vs New — Decision Matrix
+
+Choose Enhance existing when ≥2 hold:
+
+Existing code covers ≥70% of the use case
+
+Public contracts/schemas remain stable
+
+Performance targets can be met with local optimization
+
+Choose New module/service when ≥2 hold:
+
+Coupling would increase complexity significantly
+
+Existing path would breach SLOs (e.g., clear p95 regression)
+
+Data model/contract diverges (needs a separate read/write path)
+
+PRs must state the choice and cite at least two criteria.
+
+5) Error Handling & Observability
+
+Use a central error mapping so each failure returns a consistent structure and status code.
+
+Structured logs only; include contextual fields where available (request id, user id, feature, duration).
+
+Redact authorization, tokens, passwords, and PII.
+
+Full stack traces only outside production; keep logs APM-friendly.
+
+6) Performance & Reliability
+
+Define (and note in the plan) the target latency for changed paths.
+
+Measure before/after when touching hot paths; include a 1-line summary in the PR.
+
+Add caches or indexes only with quick proof (numbers from a local/proxy load or DB EXPLAIN).
+
+Keep dependencies lean; justify heavy libs in the plan.
+
+7) Database & Migrations (MCP-checked)
+
+Use forward-only migrations with a tested rollback script or revert plan.
+
+Create/verify indexes before merging query changes that rely on them.
+
+For any query change, run Supabase MCP to examine schema impacts and EXPLAIN typical queries; paste a short summary in the PR.
+
+Respect RLS/permissions/policies where applicable.
+
+8) Realtime / External Services Guardrails
+
+Secrets/tokens remain server-side; clients never hold long-lived credentials.
+
+Prefer short-lived tokens and least-privilege permissions.
+
+For critical interactions (e.g., joining a session), add a smoke test using chrome-devtools (headless) or Playwright and include a brief result in the PR.
+
+9) Testing Standard
+
+Unit tests for new logic branches and bug fixes (add a regression test).
+
+Integration/e2e via Cloudflare Playwright for critical flows; include run summary.
+
+UI sanity via chrome-devtools headless checks to catch console errors and obvious regressions.
+
+When tests are temporarily hard, include a concrete test plan & TODO with owner/date.
+
+10) PR Quality Gates (what must be present to merge)
+
+Plan-First section completed (§3) and Decision Matrix noted (§4).
+
+Tests added/updated or explicit short-term test plan.
+
+Performance note for hot paths (a sentence with a number).
+
+MCP evidence summaries included (Context7 links; Supabase schema/EXPLAIN if DB; chrome-devtools or Playwright for UI/flows).
+
+No secrets in code; environment variables validated; structured logs in place.
+
+Rollback/flag strategy documented.
+
+Changelog/docs updated when user-visible.
+
+11) Demo vs Production Segregation
+
+Goals
+
+Demo: speed of iteration, relaxed guards, verbose diagnostics, safe sample data.
+
+Production: security, stability, performance, observability.
+
+Configuration Rules
+
+Use a single APP_ENV (or equivalent) with at least two values: demo, production.
+
+Secrets & endpoints must differ per environment (separate keys/URLs).
+
+Logging:
+
+Demo → verbose logs and inline diagnostics are allowed; stack traces enabled.
+
+Production → info/warn/error only; stack traces gated; strict redaction enforced.
+
+Feature flags: unstable or experimental features are demo-only until validated.
+
+Data & privacy:
+
+Demo uses non-PII sample data or strictly limited scopes.
+
+Production enforces full privacy, consent, and minimization rules.
+
+Rate limits & timeouts: relaxed in demo (for testing), stricter in prod (to protect SLOs).
+
+Observability:
+
+Demo may skip central APM if noisy; local logs suffice.
+
+Production requires consistent structured logs and alert paths for critical errors.
+
+Deployment:
+
+Demo may allow direct promotion after passing smoke tests.
+
+Production requires all PR quality gates, MCP summaries, and—if risk is high—progressive rollout or canary.
+
+Checklist to include in every plan when environment is relevant
+
+Which environment(s) does this change touch?
+
+Are env keys or scopes different between demo and prod?
+
+Any data exposure risk changes between environments?
+
+Is there a demo-only flag or override that must be removed before prod?
+
+12) Definition of Done (DOD)
+
+A change is Done only if all apply:
+
+MCP-assisted Plan is present; acceptance criteria met.
+
+Decision Matrix recorded; enhancement vs new justified.
+
+No secrets in code; env validated; structured logs & central error handling observed.
+
+Tests added/updated (or a short-term test plan with owner/date); smoke checks summarized.
+
+Performance note added for hot paths; DB EXPLAIN summary included if queries changed.
+
+Demo vs Production implications reviewed and configured correctly.
+
+Rollback/flag strategy documented.
+
+Changelog/docs updated when user-visible.
+
+Copy-me Footer (optional to keep at the end of PRs)
+
+I followed MindSphere Global Coding Instructions: planned first, used installed MCPs for evidence (Context7 / Supabase MCP / chrome-devtools / Cloudflare Playwright), applied the Decision Matrix, met the PR gates, and documented demo vs prod differences with a rollback path.
